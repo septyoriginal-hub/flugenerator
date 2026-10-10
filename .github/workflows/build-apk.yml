@@ -15,7 +15,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install buildozer
-        run: pip install buildozer
+        run: pip install buildozer cython==0.29.36
 
       - name: Install system dependencies
         run: |
@@ -23,6 +23,14 @@ jobs:
           sudo apt-get install -y git zip unzip openjdk-17-jdk \
             autoconf libtool pkg-config zlib1g-dev libncurses5-dev \
             cmake libffi-dev libssl-dev
+
+      - name: Pre-build (downloads Android SDK)
+        run: buildozer android debug || true
+
+      - name: Accept Android SDK licenses
+        run: |
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" --sdk_root="$SDK" --licenses
 
       - name: Build APK
         run: buildozer android debug
