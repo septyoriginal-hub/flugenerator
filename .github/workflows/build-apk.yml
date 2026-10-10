@@ -1,0 +1,24 @@
+name: Build Android APK
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build APK
+        uses: kivy/buildozer-action@v1
+        id: buildozer_build
+        with:
+          workdir: .
+          buildozer_version: stable
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: flugenerator-apk
+          path: ${{ steps.buildozer_build.outputs.apk_dir }}/${{ steps.buildozer_build.outputs.apk_filename }}
