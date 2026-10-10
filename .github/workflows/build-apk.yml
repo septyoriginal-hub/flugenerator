@@ -26,10 +26,15 @@ jobs:
             autoconf libtool pkg-config zlib1g-dev libncurses5-dev \
             cmake libffi-dev libssl-dev
 
-      - name: Download Android SDK and set up buildozer
+      - name: Fetch Android SDK (first run, will fail on licenses)
+        run: buildozer android debug || true
+
+      - name: Accept Android SDK licenses
         run: |
-          buildozer android debug || true
-          yes | ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager --sdk_root=~/.buildozer/android/platform/android-sdk --licenses
+          SDK="$HOME/.buildozer/android/platform/android-sdk"
+          mkdir -p "$SDK/licenses"
+          printf '\n8933bad161af4178b1185d1a37fbf41d\nd56f5187479451eabf01fb78af6dfcb1\n24333f8a63b6825ea9c5514f83c2829b004d1fee\n' > "$SDK/licenses/android-sdk-license"
+          printf '\n84831b9409646a918e30573bab4c9c91346d8abd\n' > "$SDK/licenses/android-sdk-preview-license"
 
       - name: Build APK
         run: buildozer android debug
